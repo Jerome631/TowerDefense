@@ -6,8 +6,14 @@ using UnityEngine;
 public class LevelManager : MonoBehaviour
 {
     public GameObject[] tileprefabs;
-    public CameraMovement cameraMovement; 
+    public CameraMovement cameraMovement;
 
+    private Point startspawn, endspawn;
+
+    public GameObject startportalprefab;
+    public GameObject endportalprefab;
+
+    public Dictionary<Point,TileScript> Tiles { get; set; }
     public float TileSize
     {
         get { return tileprefabs[0].GetComponent<SpriteRenderer>().sprite.bounds.size.x; }
@@ -25,6 +31,8 @@ public class LevelManager : MonoBehaviour
 
     private void createlevel()
     {
+        Tiles = new Dictionary<Point, TileScript>();
+
         string[] mapData = ReadLevelText();
 
         //Calculate x and y of map size
@@ -42,24 +50,29 @@ public class LevelManager : MonoBehaviour
             for (int j = 0; j < mapX; j++)
             {
                 //Palces tile
-                maxTile=PlaceTile(newtiles[j].ToString(), j, i, worldstart) ;
+                PlaceTile(newtiles[j].ToString(), j, i, worldstart) ;
             }
         }
+        maxTile = Tiles[new Point(mapX-1,mapY-1)].transform.position;
 
+        //Sets camera movement limits to the max tile position
         cameraMovement.SetLimit(new Vector3(maxTile.x+TileSize, maxTile.y-TileSize));
+        
+        SpawnPortals();
     }
     
-    private Vector3 PlaceTile(string tiletype, int i, int j, Vector3 worldstart)
+    private void PlaceTile(string tiletype, int i, int j, Vector3 worldstart)
     {
         //Changes tiletype to int
         int tileindex = int.Parse(tiletype);
 
         //Creates a new tile and makes a reference to that tile in newtile
-        GameObject newtile = Instantiate(tileprefabs[tileindex]);
+        TileScript newtile = Instantiate(tileprefabs[tileindex]).GetComponent<TileScript>();
 
-        //Uses the new tile variable to change the position
-        newtile.transform.position = new Vector3(worldstart.x+TileSize * i, worldstart.y-TileSize * j, 0);
-        return newtile.transform.position;
+        //Uses the new tile variable to change the position of tile
+        newtile.Setup(new Point(i, j), new Vector3(worldstart.x + TileSize * i, worldstart.y - TileSize * j, 0));
+
+        Tiles.Add(new Point(i, j) , newtile);
     }
 
     private string[] ReadLevelText()
@@ -69,4 +82,12 @@ public class LevelManager : MonoBehaviour
         return data.Split('-');
     }
 
+    private void SpawnPortals()
+    {
+        startspawn = new Point(0, 0);
+        Instantiate(startportalprefab, Tiles[startspawn].GetComponent<TileScript>().WorldPosition, Quaternion.identity);
+
+        endspawn = new Point(11, 6);
+        Instantiate(endportalprefab, Tiles[endspawn].GetComponent<TileScript>().WorldPosition, Quaternion.identity);
+    }
 }
