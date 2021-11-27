@@ -254,13 +254,7 @@ public class GameManager : Singleton<GameManager>
     {
         if (Input.GetKeyDown(KeyCode.Escape))//If we press the escape button
         {
-            //If we haven't selected a tower, then we need to show the ingame menu
-            if (selectedTower == null && !Hover.Instance.Visible)
-            {
-                //Shows the menu
-                MenuManager.Instance.ShowIngameMenu();
-            }
-            else if (Hover.Instance.Visible)//If we are holding a tower in our hand, then we drop it
+             if (Hover.Instance.Visible)//If we are holding a tower in our hand, then we drop it
             {
                 //Drops the tower
                 DropTower();

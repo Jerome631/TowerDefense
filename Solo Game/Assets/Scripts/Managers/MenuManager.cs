@@ -14,26 +14,10 @@ public class MenuManager : Singleton<MenuManager>
     private GameObject mainMenu;
 
     /// <summary>
-    /// A reference to the options menu
-    /// </summary>
-    [SerializeField]
-    private GameObject optionMenu;
-
-    /// <summary>
-    /// Shows the options menu
-    /// </summary>
-    public void ShowOptions()
-    {
-        mainMenu.SetActive(false);
-        optionMenu.SetActive(true);
-    }
-
-    /// <summary>
     /// Shows the main menu
     /// </summary>
     public void ShowMain()
     {
-        optionMenu.SetActive(false);
         mainMenu.SetActive(true);
     }
 
@@ -64,33 +48,5 @@ public class MenuManager : Singleton<MenuManager>
     public void QuitGame()
     {
         Application.Quit();
-    }
-
-    /// <summary>
-    /// Shows the inagame menu
-    /// </summary>
-    public void ShowIngameMenu()
-    {
-        //checks if the menu is active
-        if (optionMenu.activeSelf)
-        {
-            //Shows the main menu
-            ShowMain();
-        }
-        else//If the options menu isn't active
-        {
-            //Sets the menu to active
-            mainMenu.SetActive(!mainMenu.activeSelf);
-
-            if (!mainMenu.activeSelf) //if we deactivate we unpause
-            {
-                Time.timeScale = 1;
-            }
-            else //If we activate we pause
-            {
-                Time.timeScale = 0;
-            }
-        }
-
     }
 }
